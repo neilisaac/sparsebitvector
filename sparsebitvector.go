@@ -21,7 +21,7 @@ type element struct {
 	next  *element
 }
 
-func (sbv *SparseBitVector) insert(index KeyType, prev, next *element) *element {
+func (sbv *SparseBitVector) create(index KeyType, prev, next *element) *element {
 	element := &element{index: index, next: next, prev: prev}
 
 	if prev == nil {
@@ -62,16 +62,16 @@ func (sbv *SparseBitVector) search(index KeyType) *element {
 	}
 
 	if sbv.current.index > index {
-		for element := sbv.current; element != nil; element = element.prev {
-			sbv.current = element
-			if element.index == index {
+		for e := sbv.current; e != nil; e = e.prev {
+			sbv.current = e
+			if e.index == index {
 				break
 			}
 		}
 	} else if sbv.current.index < index {
-		for element := sbv.current; element != nil; element = element.next {
-			sbv.current = element
-			if element.index == index {
+		for e := sbv.current; e != nil; e = e.next {
+			sbv.current = e
+			if e.index == index {
 				break
 			}
 		}
@@ -91,18 +91,18 @@ func (sbv *SparseBitVector) Set(key KeyType) {
 	nearest := sbv.search(index)
 
 	if nearest == nil {
-		element := sbv.insert(index, nil, nil)
-		element.Set(uint(key % elementsize))
+		e := sbv.create(index, nil, nil)
+		e.Set(uint(key % elementsize))
 	} else if nearest.index < index {
-		element := sbv.insert(index, nearest, nearest.next)
-		element.Set(uint(key % elementsize))
-		nearest.next = element
-		if element.next != nil {
-			element.next.prev = element
+		e := sbv.create(index, nearest, nearest.next)
+		e.Set(uint(key % elementsize))
+		nearest.next = e
+		if e.next != nil {
+			e.next.prev = e
 		}
 	} else if nearest.index > index {
-		element := sbv.insert(index, nearest.prev, nearest)
-		element.Set(uint(key % elementsize))
+		e := sbv.create(index, nearest.prev, nearest)
+		e.Set(uint(key % elementsize))
 	} else {
 		nearest.Set(uint(key % elementsize))
 	}
@@ -161,8 +161,8 @@ func (sbv *SparseBitVector) TestAndSet(key KeyType) bool {
 func (sbv *SparseBitVector) Iterate() <-chan int {
 	c := make(chan int)
 	go func() {
-		for element := sbv.start; element != nil; element = element.next {
-			for i := element.FindNext(0); i != -1; i = element.FindNext(i + 1) {
+		for e := sbv.start; e != nil; e = e.next {
+			for i := e.FindNext(0); i != -1; i = e.FindNext(i + 1) {
 				c <- i
 			}
 		}
