@@ -10,12 +10,19 @@ type KeyType uint64
 // SparseBitVector implementation based on that from LLVM:
 // https://github.com/llvm-mirror/llvm/blob/master/include/llvm/ADT/SparseBitVector.h
 type SparseBitVector struct {
-	start   *Element
-	current *Element
+	start   *element
+	current *element
 }
 
-func (sbv *SparseBitVector) insert(index KeyType, prev, next *Element) *Element {
-	element := &Element{index: index, next: next, prev: prev}
+type element struct {
+	FiniteBitVector
+	index KeyType
+	prev  *element
+	next  *element
+}
+
+func (sbv *SparseBitVector) insert(index KeyType, prev, next *element) *element {
+	element := &element{index: index, next: next, prev: prev}
 
 	if prev == nil {
 		sbv.start = element
@@ -31,7 +38,7 @@ func (sbv *SparseBitVector) insert(index KeyType, prev, next *Element) *Element 
 	return element
 }
 
-func (sbv *SparseBitVector) search(index KeyType) *Element {
+func (sbv *SparseBitVector) search(index KeyType) *element {
 	if sbv.current == nil {
 		if sbv.start == nil {
 			return nil
@@ -65,33 +72,33 @@ func New() *SparseBitVector {
 
 // Set sets a particular bit to true in a SparseBitVector.
 func (sbv *SparseBitVector) Set(key KeyType) {
-	index := key / ElementSize
+	index := key / elementsize
 	nearest := sbv.search(index)
 
 	if nearest == nil {
 		element := sbv.insert(index, nil, nil)
-		element.Set(key)
+		element.Set(uint(key % elementsize))
 	} else if nearest.index < index {
 		element := sbv.insert(index, nearest, nearest.next)
-		element.Set(key)
+		element.Set(uint(key % elementsize))
 		nearest.next = element
 		if element.next != nil {
 			element.next.prev = element
 		}
 	} else if nearest.index > index {
 		element := sbv.insert(index, nearest.prev, nearest)
-		element.Set(key)
+		element.Set(uint(key % elementsize))
 	} else {
-		nearest.Set(key)
+		nearest.Set(uint(key % elementsize))
 	}
 }
 
 // Unset sets a particular bit to false.
 func (sbv *SparseBitVector) Unset(key KeyType) {
-	index := key / ElementSize
+	index := key / elementsize
 	element := sbv.search(index)
 	if element != nil && element.index == index {
-		element.Unset(key)
+		element.Unset(uint(key % elementsize))
 	}
 }
 
@@ -112,12 +119,12 @@ func (sbv *SparseBitVector) Count() int {
 
 // Test checks whether a particular bit is true.
 func (sbv *SparseBitVector) Test(key KeyType) bool {
-	index := key / ElementSize
+	index := key / elementsize
 	element := sbv.search(index)
 	if element == nil || element.index != index {
 		return false
 	}
-	return element.Test(key)
+	return element.Test(uint(key % elementsize))
 }
 
 // TestAndSet checks whether a bit was previously true before setting it to true.
