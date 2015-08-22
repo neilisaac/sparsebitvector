@@ -59,6 +59,27 @@ func (vec *FiniteBitVector) Test(key uint) bool {
 	return (vec[word] & (1 << bit)) != 0
 }
 
+// FindNext retruns the next true bit starting from index, or -1 if none exist.
+// The initial call should pass index -1.
+func (vec *FiniteBitVector) FindNext(index int) int {
+	if index >= elementsize-1 {
+		return -1
+	}
+	word, bit := vec.getWordBit(uint(index + 1))
+	for w := word; w < uint(len(vec)); w++ {
+		bits := vec[w] >> bit
+		for bits != 0 {
+			if bits&1 == 1 {
+				return int(w*bitsperword + bit)
+			}
+			bit++
+			bits >>= 1
+		}
+		bit = 0
+	}
+	return -1
+}
+
 // Count returns the number of true bits within the ELement.
 func (vec *FiniteBitVector) Count() (count int) {
 	for _, word := range vec {

@@ -79,3 +79,54 @@ func TestTrivialBitVectorOperation(t *testing.T) {
 		t.Error("17 unexpected", vec)
 	}
 }
+
+func TestFindNext(t *testing.T) {
+	vec := &FiniteBitVector{}
+
+	if i := vec.FindNext(-1); i != -1 {
+		t.Error("unexpected result", i, vec)
+	}
+
+	vec.Set(0)
+	vec.Set(5)
+	vec.Set(63)
+	if i := vec.FindNext(-1); i != 0 {
+		t.Error("unexpected result", i, vec)
+	}
+	if i := vec.FindNext(0); i != 5 {
+		t.Error("unexpected result", i, vec)
+	}
+	if i := vec.FindNext(4); i != 5 {
+		t.Error("unexpected result", i, vec)
+	}
+	if i := vec.FindNext(5); i != 63 {
+		t.Error("unexpected result", i, vec)
+	}
+	if i := vec.FindNext(63); i != -1 {
+		t.Error("unexpected result", i, vec)
+	}
+	if i := vec.FindNext(65); i != -1 {
+		t.Error("unexpected result", i, vec)
+	}
+
+	vec.Unset(0)
+	vec.Unset(63)
+	vec.Set(67)
+	vec.Set(127)
+	if i := vec.FindNext(-1); i != 5 {
+		t.Error("unexpected result", i, vec)
+	}
+	if i := vec.FindNext(5); i != 67 {
+		t.Error("unexpected result", i, vec)
+	}
+	if i := vec.FindNext(65); i != 67 {
+		t.Error("unexpected result", i, vec)
+	}
+	if i := vec.FindNext(67); i != 127 {
+		t.Error("unexpected result", i, vec)
+	}
+	if i := vec.FindNext(127); i != -1 {
+		t.Error("unexpected result", i, vec)
+	}
+
+}
