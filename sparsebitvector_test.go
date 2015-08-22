@@ -62,6 +62,31 @@ func TestTrivialOperation(t *testing.T) {
 	}
 }
 
+func TestDelete(t *testing.T) {
+	vec := New()
+	vec.Set(0)
+	vec.Set(128)
+	if vec.start.next.next != nil {
+		t.Error("expected 2 elements")
+	}
+
+	vec.Unset(0)
+	if vec.start.next != nil {
+		t.Error("expected 1 element")
+	}
+
+	vec.Set(0)
+	vec.Unset(128)
+	if vec.start.next != nil {
+		t.Error("expected 1 element")
+	}
+
+	vec.Unset(0)
+	if vec.start != nil {
+		t.Error("expected 0 elements")
+	}
+}
+
 func TestIteration(t *testing.T) {
 	vec := New()
 

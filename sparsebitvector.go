@@ -38,6 +38,21 @@ func (sbv *SparseBitVector) insert(index KeyType, prev, next *element) *element 
 	return element
 }
 
+func (sbv *SparseBitVector) delete(e *element) {
+	if sbv.start == e {
+		sbv.start = e.next
+	}
+	if sbv.current == e {
+		sbv.current = e.next
+	}
+	if e.prev != nil {
+		e.prev.next = e.next
+	}
+	if e.next != nil {
+		e.next.prev = e.prev
+	}
+}
+
 func (sbv *SparseBitVector) search(index KeyType) *element {
 	if sbv.current == nil {
 		if sbv.start == nil {
@@ -96,9 +111,14 @@ func (sbv *SparseBitVector) Set(key KeyType) {
 // Unset sets a particular bit to false.
 func (sbv *SparseBitVector) Unset(key KeyType) {
 	index := key / elementsize
-	element := sbv.search(index)
-	if element != nil && element.index == index {
-		element.Unset(uint(key % elementsize))
+	e := sbv.search(index)
+	if e == nil || e.index != index {
+		return
+	}
+
+	e.Unset(uint(key % elementsize))
+	if e.Count() == 0 {
+		sbv.delete(e)
 	}
 }
 
