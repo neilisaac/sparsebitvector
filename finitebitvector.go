@@ -60,12 +60,10 @@ func (vec *FiniteBitVector) Test(key uint) bool {
 }
 
 // FindNext retruns the next true bit starting from index, or -1 if none exist.
-// The initial call should pass index -1.
+// The initial call should pass index 0.
+// Successive calls should pass previous+1.
 func (vec *FiniteBitVector) FindNext(index int) int {
-	if index >= elementsize-1 {
-		return -1
-	}
-	word, bit := vec.getWordBit(uint(index + 1))
+	word, bit := vec.getWordBit(uint(index))
 	for w := word; w < uint(len(vec)); w++ {
 		bits := vec[w] >> bit
 		for bits != 0 {
