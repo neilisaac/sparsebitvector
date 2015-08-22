@@ -66,11 +66,13 @@ func TestDelete(t *testing.T) {
 	vec := New()
 	vec.Set(0)
 	vec.Set(128)
-	if vec.start.next.next != nil {
-		t.Error("expected 2 elements")
+	vec.Set(1000000000)
+	if vec.start.next.next.next != nil {
+		t.Error("expected 3 elements")
 	}
 
 	vec.Unset(0)
+	vec.Unset(1000000000)
 	if vec.start.next != nil {
 		t.Error("expected 1 element")
 	}
@@ -90,26 +92,27 @@ func TestDelete(t *testing.T) {
 func TestIteration(t *testing.T) {
 	vec := New()
 
-	test := func() []int {
-		result := []int{}
+	test := func() []KeyType {
+		result := []KeyType{}
 		for i := range vec.Iterate() {
 			result = append(result, i)
 		}
 		return result
 	}
 
-	if result := test(); !reflect.DeepEqual(result, []int{}) {
+	if result := test(); !reflect.DeepEqual(result, []KeyType{}) {
 		t.Error("incorrect result", result, vec)
 	}
 
 	vec.Set(5)
-	if result := test(); !reflect.DeepEqual(result, []int{5}) {
+	if result := test(); !reflect.DeepEqual(result, []KeyType{5}) {
 		t.Error("incorrect result", result, vec)
 	}
 
 	vec.Set(0)
 	vec.Set(65)
-	if result := test(); !reflect.DeepEqual(result, []int{0, 5, 65}) {
+	vec.Set(1000000000)
+	if result := test(); !reflect.DeepEqual(result, []KeyType{0, 5, 65, 1000000000}) {
 		t.Error("incorrect result", result, vec)
 	}
 }
