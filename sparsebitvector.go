@@ -135,3 +135,18 @@ func (sbv *SparseBitVector) TestAndSet(key KeyType) bool {
 	sbv.Set(key)
 	return true
 }
+
+// Iterate returns a channel which publishes all true bits in ascending order.
+// The behaviour is undefined for bits modified while iterating.
+func (sbv *SparseBitVector) Iterate() <-chan int {
+	c := make(chan int)
+	go func() {
+		for element := sbv.start; element != nil; element = element.next {
+			for i := element.FindNext(0); i != -1; i = element.FindNext(i + 1) {
+				c <- i
+			}
+		}
+		close(c)
+	}()
+	return c
+}

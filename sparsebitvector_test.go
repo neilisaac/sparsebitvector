@@ -5,6 +5,7 @@
 package sparsebitvector
 
 import "testing"
+import "reflect"
 
 func TestTrivialOperation(t *testing.T) {
 	vec := New()
@@ -58,5 +59,32 @@ func TestTrivialOperation(t *testing.T) {
 	vec.Clear()
 	if vec.Test(17) {
 		t.Error("17 unexpected")
+	}
+}
+
+func TestIteration(t *testing.T) {
+	vec := New()
+
+	test := func() []int {
+		result := []int{}
+		for i := range vec.Iterate() {
+			result = append(result, i)
+		}
+		return result
+	}
+
+	if result := test(); !reflect.DeepEqual(result, []int{}) {
+		t.Error("incorrect result", result, vec)
+	}
+
+	vec.Set(5)
+	if result := test(); !reflect.DeepEqual(result, []int{5}) {
+		t.Error("incorrect result", result, vec)
+	}
+
+	vec.Set(0)
+	vec.Set(65)
+	if result := test(); !reflect.DeepEqual(result, []int{0, 5, 65}) {
+		t.Error("incorrect result", result, vec)
 	}
 }
