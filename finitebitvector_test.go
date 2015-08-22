@@ -6,7 +6,7 @@ package sparsebitvector
 
 import "testing"
 
-func TestelementWordBit(t *testing.T) {
+func TestGetWordBit(t *testing.T) {
 	vec := &FiniteBitVector{}
 	if w, b := vec.getWordBit(0); w != 0 || b != 0 {
 		t.Error("incorrect word or bit: word=", w, "bit=", b)
@@ -20,35 +20,9 @@ func TestelementWordBit(t *testing.T) {
 	if w, b := vec.getWordBit(bitsperword + 1); w != 1 || b != 1 {
 		t.Error("incorrect word or bit: word=", w, "bit=", b)
 	}
-
-	if w, b := vec.getWordBit(elementsize); w != 0 || b != 0 {
-		t.Error("incorrect word or bit: word=", w, "bit=", b)
-	}
-	if w, b := vec.getWordBit(elementsize + 1); w != 0 || b != 1 {
-		t.Error("incorrect word or bit: word=", w, " bit=", b)
-	}
-	if w, b := vec.getWordBit(elementsize + bitsperword - 1); w != 0 || b != 63 {
-		t.Error("incorrect word or bit: word=", w, "bit=", b)
-	}
-	if w, b := vec.getWordBit(elementsize + bitsperword + 1); w != 1 || b != 1 {
-		t.Error("incorrect word or bit: word=", w, "bit=", b)
-	}
-
-	if w, b := vec.getWordBit(10 * elementsize); w != 0 || b != 0 {
-		t.Error("incorrect word or bit: word=", w, "bit=", b)
-	}
-	if w, b := vec.getWordBit(10*elementsize + 1); w != 0 || b != 1 {
-		t.Error("incorrect word or bit: word=", w, "bit=", b)
-	}
-	if w, b := vec.getWordBit(10*elementsize + bitsperword - 1); w != 0 || b != 63 {
-		t.Error("incorrect word or bit: word=", w, "bit=", b)
-	}
-	if w, b := vec.getWordBit(10*elementsize + bitsperword + 1); w != 1 || b != 1 {
-		t.Error("incorrect word or bit: word=", w, "bit=", b)
-	}
 }
 
-func TestTrivialelementOperation(t *testing.T) {
+func TestTrivialBitVectorOperation(t *testing.T) {
 	vec := &element{}
 
 	if vec.Test(0) {
