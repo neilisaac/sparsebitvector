@@ -89,6 +89,21 @@ func TestDelete(t *testing.T) {
 	}
 }
 
+func TestSparseBitVectorString(t *testing.T) {
+	vec := New()
+	if s := vec.String(); s != "[]" {
+		t.Error("unexpected string", s)
+	}
+
+	vec.Set(0)
+	vec.Set(5)
+	vec.Set(100)
+	vec.Set(1000000000)
+	if s := vec.String(); s != "[0 5 100 1000000000]" {
+		t.Error("unexpected string", s)
+	}
+}
+
 func TestIteration(t *testing.T) {
 	vec := New()
 

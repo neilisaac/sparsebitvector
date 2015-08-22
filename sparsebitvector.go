@@ -4,6 +4,8 @@
 
 package sparsebitvector
 
+import "fmt"
+
 // KeyType defines SparseBitVector's keyspace.
 type KeyType uint64
 
@@ -169,4 +171,12 @@ func (sbv *SparseBitVector) Iterate() <-chan KeyType {
 		close(c)
 	}()
 	return c
+}
+
+func (sbv *SparseBitVector) String() string {
+	result := []KeyType{}
+	for i := range sbv.Iterate() {
+		result = append(result, i)
+	}
+	return fmt.Sprint(result)
 }
