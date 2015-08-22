@@ -43,7 +43,7 @@ func TestTrivialBitVectorOperation(t *testing.T) {
 	if vec.Test(17) {
 		t.Error("17 unexpected", vec)
 	}
-	if vec.String() != "0000000000000020" {
+	if vec.String() != "[5]" {
 		t.Error("incorrect string", vec)
 	}
 

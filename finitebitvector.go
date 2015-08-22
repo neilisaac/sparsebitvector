@@ -90,11 +90,9 @@ func (vec *FiniteBitVector) Count() (count int) {
 }
 
 func (vec *FiniteBitVector) String() string {
-	result := []byte{}
-	for w := range vec {
-		for _, c := range fmt.Sprintf("%08x", vec[len(vec)-w-1]) {
-			result = append(result, byte(c))
-		}
+	result := []int{}
+	for i := vec.FindNext(0); i != -1; i = vec.FindNext(i + 1) {
+		result = append(result, i)
 	}
-	return string(result)
+	return fmt.Sprint(result)
 }
