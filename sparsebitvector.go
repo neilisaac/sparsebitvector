@@ -106,6 +106,19 @@ func (sbv *SparseBitVector) Equals(sbv2 *SparseBitVector) bool {
 	return true
 }
 
+// Contains returns true iff sbv contains all of sbv2's true bits.
+func (sbv *SparseBitVector) Contains(sbv2 *SparseBitVector) bool {
+	for e1, e2 := sbv.start, sbv2.start; e2 != nil; e1, e2 = e1.next, e2.next {
+		for e1 != nil && e1.index < e2.index {
+			e1 = e1.next
+		}
+		if e1 == nil || e1.index != e2.index || !e1.Contains(&e2.FiniteBitVector) {
+			return false
+		}
+	}
+	return true
+}
+
 // Iterate returns a channel which publishes all true bits in ascending order.
 // The behaviour is undefined for bits modified while iterating.
 func (sbv *SparseBitVector) Iterate() <-chan KeyType {

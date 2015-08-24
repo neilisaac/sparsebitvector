@@ -130,6 +130,56 @@ func TestEquals(t *testing.T) {
 	}
 }
 
+func TestContains(t *testing.T) {
+	vec1 := New()
+	vec2 := New()
+	if !vec1.Contains(vec1) {
+		t.Error("vec1 should contain itself", vec1)
+	}
+	if !vec1.Contains(vec2) || !vec2.Contains(vec1) {
+		t.Error("vec1 and vec2 should contain each other", vec1, vec2)
+	}
+
+	vec1 = New(1, 63, 64, 127, 1000000)
+	vec2 = New(1, 63, 64, 127, 1000000)
+	if !vec1.Contains(vec1) {
+		t.Error("vec1 should contain itself", vec1)
+	}
+	if !vec1.Contains(vec2) || !vec2.Contains(vec1) {
+		t.Error("vec1 and vec2 should contain each other", vec1, vec2)
+	}
+
+	vec1 = New(1, 1000000)
+	vec2 = New(1, 1000001)
+	if vec1.Contains(vec2) || vec2.Contains(vec1) {
+		t.Error("vec1 and vec2 should not contain each other", vec1, vec2)
+	}
+
+	vec1 = New(0)
+	vec2 = New(elementsize)
+	if vec1.Contains(vec2) || vec2.Contains(vec1) {
+		t.Error("vec1 and vec2 should not contain each other", vec1, vec2)
+	}
+
+	vec1 = New(1)
+	vec2 = New(1, 1000001)
+	if vec1.Equals(vec2) {
+		t.Error("vec1 should not contain vec2", vec1, vec2)
+	}
+	if vec2.Equals(vec1) {
+		t.Error("vec2 should contain vec1", vec1, vec2)
+	}
+
+	vec1 = New()
+	vec2 = New(1, 1000001)
+	if vec1.Equals(vec2) {
+		t.Error("vec1 should not contain vec2", vec1, vec2)
+	}
+	if vec2.Equals(vec1) {
+		t.Error("vec2 should contain vec1", vec1, vec2)
+	}
+}
+
 func TestSparseBitVectorString(t *testing.T) {
 	vec := New()
 	if s := vec.String(); s != "[]" {
