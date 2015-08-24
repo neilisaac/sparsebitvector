@@ -89,6 +89,23 @@ func (vec *FiniteBitVector) Count() (count int) {
 	return
 }
 
+// UnionAndIntersectionSize returns the number of true bits of the union and intersection with vec2.
+func (vec *FiniteBitVector) UnionAndIntersectionSize(vec2 *FiniteBitVector) (int, int) {
+	union := 0
+	intersection := 0
+	for w := 0; w < wordsperelement; w++ {
+		word1 := vec[w]
+		word2 := vec2[w]
+		for word1 != 0 || word2 != 0 {
+			union += int(word1&1 | word2&1)
+			intersection += int(word1 & word2 & 1)
+			word1 >>= 1
+			word2 >>= 1
+		}
+	}
+	return union, intersection
+}
+
 func (vec *FiniteBitVector) String() string {
 	result := []int{}
 	for i := vec.FindNext(0); i != -1; i = vec.FindNext(i + 1) {
