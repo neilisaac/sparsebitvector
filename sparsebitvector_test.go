@@ -188,12 +188,12 @@ func TestUnionAndIntersectionSize(t *testing.T) {
 		t.Error("incorrect union or intersection size", u, i, vec1, vec2)
 	}
 
-	vec1 = New(0, 1000000)
+	vec1 = New(0, 63, 1000000)
 	vec2 = New(0, 127, 128, 1000000)
-	if u, i := vec1.UnionAndIntersectionSize(vec2); u != 4 || i != 2 {
+	if u, i := vec1.UnionAndIntersectionSize(vec2); u != 5 || i != 2 {
 		t.Error("incorrect union or intersection size", u, i, vec1, vec2)
 	}
-	if u, i := vec2.UnionAndIntersectionSize(vec1); u != 4 || i != 2 {
+	if u, i := vec2.UnionAndIntersectionSize(vec1); u != 5 || i != 2 {
 		t.Error("incorrect union or intersection size", u, i, vec2, vec1)
 	}
 	if u, i := vec2.UnionAndIntersectionSize(vec2); u != 4 || i != 4 {
@@ -208,7 +208,33 @@ func TestUnionAndIntersectionSize(t *testing.T) {
 	if u, i := vec2.UnionAndIntersectionSize(vec1); u != 2 || i != 0 {
 		t.Error("incorrect union or intersection size", u, i, vec2, vec1)
 	}
+}
 
+func TestUnionWith(t *testing.T) {
+	vec1 := New()
+	vec2 := New()
+
+	if vec1.UnionWith(vec2); vec1.Count() != 0 {
+		t.Error("incorrect union", vec1, vec2)
+	}
+
+	vec1 = New(0, 63, 1000000)
+	vec2 = New(0, 127, 128, 1000000)
+	if vec1.UnionWith(vec2); vec1.String() != "[0 63 127 128 1000000]" {
+		t.Error("incorrect union", vec1, vec2)
+	}
+	if vec2.UnionWith(New(0, 63, 1000000)); vec2.String() != "[0 63 127 128 1000000]" {
+		t.Error("incorrect union", vec2)
+	}
+
+	vec1 = New()
+	vec2 = New(0, 1000000)
+	if vec1.UnionWith(vec2); vec1.Count() != 2 {
+		t.Error("incorrect union", vec1, vec2)
+	}
+	if vec2.UnionWith(New()); vec2.Count() != 2 {
+		t.Error("incorrect union", vec2)
+	}
 }
 
 func TestSparseBitVectorString(t *testing.T) {

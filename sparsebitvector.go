@@ -146,6 +146,31 @@ func (sbv *SparseBitVector) UnionAndIntersectionSize(sbv2 *SparseBitVector) (int
 	return union, intersection
 }
 
+// UnionWith returns the number of true bits of the union and intersection with sbv2.
+func (sbv *SparseBitVector) UnionWith(sbv2 *SparseBitVector) {
+	for e1, e2 := sbv.start, sbv2.start; e1 != nil || e2 != nil; {
+		// sbv catch-up
+		for e1 != nil && (e2 == nil || e1.index < e2.index) {
+			e1 = e1.next
+		}
+		// sbv2 catch-up
+		for e2 != nil && (e1 == nil || e2.index < e1.index) {
+			// insert element and copy data
+			sbv.Set(e2.index * elementsize)
+			e1 = sbv.search(e2.index)
+			e1.FiniteBitVector = e2.FiniteBitVector
+			e1 = e1.next
+			e2 = e2.next
+		}
+		// same index
+		if e1 != nil && e2 != nil && e1.index == e2.index {
+			e1.UnionWith(&e2.FiniteBitVector)
+			e1 = e1.next
+			e2 = e2.next
+		}
+	}
+}
+
 // Iterate returns a channel which publishes all true bits in ascending order.
 // The behaviour is undefined for bits modified while iterating.
 func (sbv *SparseBitVector) Iterate() <-chan KeyType {
