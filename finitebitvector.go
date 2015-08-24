@@ -115,6 +115,27 @@ func (vec *FiniteBitVector) UnionAndIntersectionSize(vec2 *FiniteBitVector) (int
 	return union, intersection
 }
 
+// UnionWith sets vec to the union of itself and vec2.
+func (vec *FiniteBitVector) UnionWith(vec2 *FiniteBitVector) {
+	for i := range vec {
+		vec[i] |= vec2[i]
+	}
+}
+
+// IntersectWith sets vec to the intersection of itself and vec2.
+func (vec *FiniteBitVector) IntersectWith(vec2 *FiniteBitVector) {
+	for i := range vec {
+		vec[i] &= vec2[i]
+	}
+}
+
+// IntersectWithComplement sets vec to the intersection of itself and ~vec2.
+func (vec *FiniteBitVector) IntersectWithComplement(vec2 *FiniteBitVector) {
+	for i := range vec {
+		vec[i] &^= vec2[i]
+	}
+}
+
 // Equals returns true iff vec and vec2 contain equivalent true bits.
 func (vec *FiniteBitVector) Equals(vec2 *FiniteBitVector) bool {
 	for i := range vec {

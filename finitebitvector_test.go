@@ -134,13 +134,20 @@ func TestFindNext(t *testing.T) {
 func TestFiniteBitVectorBinaryOperations(t *testing.T) {
 	vec1 := NewFiniteBitVector()
 	vec2 := NewFiniteBitVector()
-
 	if !vec1.Equals(vec2) || !vec2.Equals(vec1) {
 		t.Error("vec1 and vec2 be equal", vec1, vec2)
 	}
-
 	if u, i := vec1.UnionAndIntersectionSize(vec2); u != 0 || i != 0 {
 		t.Error("incorrect union or intersection size", u, i, vec1, vec2)
+	}
+	if vec1.UnionWith(vec2); vec1.Count() != 0 {
+		t.Error("incorrect union", vec1)
+	}
+	if vec1.IntersectWith(vec2); vec1.Count() != 0 {
+		t.Error("incorrect intersection", vec1)
+	}
+	if vec1.IntersectWithComplement(vec2); vec1.Count() != 0 {
+		t.Error("incorrect complement intersection", vec1)
 	}
 
 	vec1.Set(3)
@@ -151,12 +158,28 @@ func TestFiniteBitVectorBinaryOperations(t *testing.T) {
 
 	vec1 = NewFiniteBitVector(0, 3, 5, 100, 101)
 	vec2 = NewFiniteBitVector(1, 2, 3, 101, 127)
-
 	if vec1.Equals(vec2) || vec2.Equals(vec1) {
 		t.Error("vec1 and vec2 should not be equal", vec1, vec2)
 	}
-
 	if u, i := vec1.UnionAndIntersectionSize(vec2); u != 8 || i != 2 {
 		t.Error("incorrect union or intersection size", u, i, vec1, vec2)
+	}
+
+	vec1 = NewFiniteBitVector(0, 3, 5, 100, 101)
+	vec2 = NewFiniteBitVector(1, 2, 3, 101, 127)
+	if vec1.UnionWith(vec2); vec1.Count() != 8 {
+		t.Error("incorrect union", vec1)
+	}
+
+	vec1 = NewFiniteBitVector(0, 3, 5, 100, 101)
+	vec2 = NewFiniteBitVector(1, 2, 3, 101, 127)
+	if vec1.IntersectWith(vec2); vec1.Count() != 2 {
+		t.Error("incorrect intersection", vec1)
+	}
+
+	vec1 = NewFiniteBitVector(0, 3, 5, 100, 101)
+	vec2 = NewFiniteBitVector(1, 2, 3, 101, 127)
+	if vec1.IntersectWithComplement(vec2); !vec1.Equals(NewFiniteBitVector(0, 5, 100)) {
+		t.Error("incorrect complement intersection", vec1)
 	}
 }
