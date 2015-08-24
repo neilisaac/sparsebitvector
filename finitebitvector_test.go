@@ -149,11 +149,17 @@ func TestFiniteBitVectorBinaryOperations(t *testing.T) {
 	if vec1.IntersectWithComplement(vec2); vec1.Count() != 0 {
 		t.Error("incorrect complement intersection", vec1)
 	}
+	if !vec1.Contains(vec2) {
+		t.Error("vec1 should contain vec2")
+	}
 
 	vec1.Set(3)
 	vec2.Set(3)
 	if !vec1.Equals(vec2) || !vec2.Equals(vec1) {
 		t.Error("vec1 and vec2 be equal", vec1, vec2)
+	}
+	if !vec1.Contains(vec2) {
+		t.Error("vec1 should contain vec2")
 	}
 
 	vec1 = NewFiniteBitVector(0, 3, 5, 100, 101)
@@ -163,6 +169,9 @@ func TestFiniteBitVectorBinaryOperations(t *testing.T) {
 	}
 	if u, i := vec1.UnionAndIntersectionSize(vec2); u != 8 || i != 2 {
 		t.Error("incorrect union or intersection size", u, i, vec1, vec2)
+	}
+	if vec1.Contains(vec2) {
+		t.Error("vec1 should not contain vec2")
 	}
 
 	vec1 = NewFiniteBitVector(0, 3, 5, 100, 101)

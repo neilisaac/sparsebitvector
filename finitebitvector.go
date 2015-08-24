@@ -136,6 +136,16 @@ func (vec *FiniteBitVector) IntersectWithComplement(vec2 *FiniteBitVector) {
 	}
 }
 
+// Contains returns true iff vec contains all of vec2's true bits.
+func (vec *FiniteBitVector) Contains(vec2 *FiniteBitVector) bool {
+	for i := range vec {
+		if vec[i]&vec2[i] != vec2[i] {
+			return false
+		}
+	}
+	return true
+}
+
 // Equals returns true iff vec and vec2 contain equivalent true bits.
 func (vec *FiniteBitVector) Equals(vec2 *FiniteBitVector) bool {
 	for i := range vec {
