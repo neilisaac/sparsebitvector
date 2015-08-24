@@ -115,6 +115,16 @@ func (vec *FiniteBitVector) UnionAndIntersectionSize(vec2 *FiniteBitVector) (int
 	return union, intersection
 }
 
+// Equals returns true iff vec and vec2 contain equivalent true bits.
+func (vec *FiniteBitVector) Equals(vec2 *FiniteBitVector) bool {
+	for i := range vec {
+		if vec[i] != vec2[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func (vec *FiniteBitVector) String() string {
 	result := []int{}
 	for i := vec.FindNext(0); i != -1; i = vec.FindNext(i + 1) {
