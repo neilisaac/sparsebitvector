@@ -216,8 +216,8 @@ func TestIteration(t *testing.T) {
 	}
 
 	vec.Set(0)
-	vec.Set(65)
 	vec.Set(1000000000)
+	vec.Set(65)
 	if result := test(); !reflect.DeepEqual(result, []KeyType{0, 5, 65, 1000000000}) {
 		t.Error("incorrect result", result, vec)
 	}
