@@ -128,7 +128,9 @@ func TestFindNext(t *testing.T) {
 	if i := vec.FindNext(127); i != 127 {
 		t.Error("unexpected result", i, vec)
 	}
-
+	if i := vec.FindNext(128); i != -1 {
+		t.Error("unexpected result", i, vec)
+	}
 }
 
 func TestFiniteBitVectorBinaryOperations(t *testing.T) {
