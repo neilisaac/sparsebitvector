@@ -63,10 +63,7 @@ func TestTrivialOperation(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	vec := New()
-	vec.Set(0)
-	vec.Set(128)
-	vec.Set(1000000000)
+	vec := New(0, 128, 1000000000)
 	if vec.start.next.next.next != nil {
 		t.Error("expected 3 elements")
 	}

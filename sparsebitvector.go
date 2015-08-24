@@ -16,9 +16,13 @@ type SparseBitVector struct {
 	current *element
 }
 
-// New creates and instance of a SparseBitVector.
-func New() *SparseBitVector {
-	return new(SparseBitVector)
+// New creates and instance of a SparseBitVector, optionally initialized by set.
+func New(set ...KeyType) *SparseBitVector {
+	result := new(SparseBitVector)
+	for _, i := range set {
+		result.Set(i)
+	}
+	return result
 }
 
 // Set sets a particular bit to true in a SparseBitVector.
