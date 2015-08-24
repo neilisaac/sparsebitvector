@@ -111,6 +111,12 @@ func TestEquals(t *testing.T) {
 		t.Error("vec1 and vec2 should not be equal", vec1, vec2)
 	}
 
+	vec1 = New(0)
+	vec2 = New(elementsize)
+	if vec1.Equals(vec2) || vec2.Equals(vec1) {
+		t.Error("vec1 and vec2 should not be equal", vec1, vec2)
+	}
+
 	vec1 = New(1)
 	vec2 = New(1, 1000001)
 	if vec1.Equals(vec2) || vec2.Equals(vec1) {

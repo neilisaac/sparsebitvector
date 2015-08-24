@@ -99,7 +99,7 @@ func (sbv *SparseBitVector) TestAndSet(key KeyType) bool {
 // Equals returns true iff sbv and sbv2 contain equivalent true bits.
 func (sbv *SparseBitVector) Equals(sbv2 *SparseBitVector) bool {
 	for e1, e2 := sbv.start, sbv2.start; e1 != nil || e2 != nil; e1, e2 = e1.next, e2.next {
-		if e1 == nil || e2 == nil || !e1.Equals(&e2.FiniteBitVector) {
+		if e1 == nil || e2 == nil || e1.index != e2.index || !e1.Equals(&e2.FiniteBitVector) {
 			return false
 		}
 	}
