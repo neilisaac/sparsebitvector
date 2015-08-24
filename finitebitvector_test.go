@@ -131,25 +131,16 @@ func TestFindNext(t *testing.T) {
 
 }
 
-func TestFiniteBitVectorUnionIntersection(t *testing.T) {
-	vec1 := &FiniteBitVector{}
-	vec2 := &FiniteBitVector{}
+func TestFiniteBitVectorBinaryOperations(t *testing.T) {
+	vec1 := NewFiniteBitVector()
+	vec2 := NewFiniteBitVector()
 
 	if u, i := vec1.UnionAndIntersectionSize(vec2); u != 0 || i != 0 {
 		t.Error("incorrect union or intersection size", u, i, vec1, vec2)
 	}
 
-	vec1.Set(0)
-	vec1.Set(3)
-	vec1.Set(5)
-	vec1.Set(100)
-	vec1.Set(101)
-
-	vec2.Set(1)
-	vec2.Set(2)
-	vec2.Set(3)
-	vec2.Set(101)
-	vec2.Set(127)
+	vec1 = NewFiniteBitVector(0, 3, 5, 100, 101)
+	vec2 = NewFiniteBitVector(1, 2, 3, 101, 127)
 
 	if u, i := vec1.UnionAndIntersectionSize(vec2); u != 8 || i != 2 {
 		t.Error("incorrect union or intersection size", u, i, vec1, vec2)

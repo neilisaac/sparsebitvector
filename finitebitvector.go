@@ -15,6 +15,15 @@ const elementsize = bitsperword * wordsperelement
 // FiniteBitVector provides a bit vector of length elementsize.
 type FiniteBitVector [wordsperelement]elementwordtype
 
+// NewFiniteBitVector initializes a FiniteBitVector from the given elements.
+func NewFiniteBitVector(set ...uint) *FiniteBitVector {
+	result := &FiniteBitVector{}
+	for _, i := range set {
+		result.Set(i)
+	}
+	return result
+}
+
 func (vec *FiniteBitVector) getWordBit(key uint) (uint, uint) {
 	if key < 0 || key >= elementsize {
 		panic("key out of range for element")
