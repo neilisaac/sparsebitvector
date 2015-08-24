@@ -100,14 +100,14 @@ func (sbv *SparseBitVector) TestAndSet(key KeyType) bool {
 // The behaviour is undefined for bits modified while iterating.
 func (sbv *SparseBitVector) Iterate() <-chan KeyType {
 	c := make(chan KeyType)
-	go func() {
+	go func(c chan<- KeyType) {
 		for e := sbv.start; e != nil; e = e.next {
 			for i := e.FindNext(0); i != -1; i = e.FindNext(i + 1) {
 				c <- e.index*elementsize + KeyType(i)
 			}
 		}
 		close(c)
-	}()
+	}(c)
 	return c
 }
 
