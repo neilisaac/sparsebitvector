@@ -86,6 +86,44 @@ func TestDelete(t *testing.T) {
 	}
 }
 
+func TestEquals(t *testing.T) {
+	vec1 := New()
+	vec2 := New()
+	if !vec1.Equals(vec1) {
+		t.Error("vec1 should equal itself", vec1)
+	}
+	if !vec1.Equals(vec2) || !vec2.Equals(vec1) {
+		t.Error("vec1 and vec2 should be equal", vec1, vec2)
+	}
+
+	vec1 = New(1, 63, 64, 127, 1000000)
+	vec2 = New(1, 63, 64, 127, 1000000)
+	if !vec1.Equals(vec1) {
+		t.Error("vec1 should equal itself", vec1)
+	}
+	if !vec1.Equals(vec2) || !vec2.Equals(vec1) {
+		t.Error("vec1 and vec2 should be equal", vec1, vec2)
+	}
+
+	vec1 = New(1, 1000000)
+	vec2 = New(1, 1000001)
+	if vec1.Equals(vec2) || vec2.Equals(vec1) {
+		t.Error("vec1 and vec2 should not be equal", vec1, vec2)
+	}
+
+	vec1 = New(1)
+	vec2 = New(1, 1000001)
+	if vec1.Equals(vec2) || vec2.Equals(vec1) {
+		t.Error("vec1 and vec2 should not be equal", vec1, vec2)
+	}
+
+	vec1 = New()
+	vec2 = New(1, 1000001)
+	if vec1.Equals(vec2) || vec2.Equals(vec1) {
+		t.Error("vec1 and vec2 should not be equal", vec1, vec2)
+	}
+}
+
 func TestSparseBitVectorString(t *testing.T) {
 	vec := New()
 	if s := vec.String(); s != "[]" {
