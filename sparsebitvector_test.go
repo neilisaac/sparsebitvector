@@ -180,6 +180,37 @@ func TestContains(t *testing.T) {
 	}
 }
 
+func TestUnionAndIntersectionSize(t *testing.T) {
+	vec1 := New()
+	vec2 := New()
+
+	if u, i := vec1.UnionAndIntersectionSize(vec2); u != 0 || i != 0 {
+		t.Error("incorrect union or intersection size", u, i, vec1, vec2)
+	}
+
+	vec1 = New(0, 1000000)
+	vec2 = New(0, 127, 128, 1000000)
+	if u, i := vec1.UnionAndIntersectionSize(vec2); u != 4 || i != 2 {
+		t.Error("incorrect union or intersection size", u, i, vec1, vec2)
+	}
+	if u, i := vec2.UnionAndIntersectionSize(vec1); u != 4 || i != 2 {
+		t.Error("incorrect union or intersection size", u, i, vec2, vec1)
+	}
+	if u, i := vec2.UnionAndIntersectionSize(vec2); u != 4 || i != 4 {
+		t.Error("incorrect union or intersection size", u, i, vec2)
+	}
+
+	vec1 = New()
+	vec2 = New(0, 1000000)
+	if u, i := vec1.UnionAndIntersectionSize(vec2); u != 2 || i != 0 {
+		t.Error("incorrect union or intersection size", u, i, vec1, vec2)
+	}
+	if u, i := vec2.UnionAndIntersectionSize(vec1); u != 2 || i != 0 {
+		t.Error("incorrect union or intersection size", u, i, vec2, vec1)
+	}
+
+}
+
 func TestSparseBitVectorString(t *testing.T) {
 	vec := New()
 	if s := vec.String(); s != "[]" {
