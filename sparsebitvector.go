@@ -171,6 +171,47 @@ func (sbv *SparseBitVector) UnionWith(sbv2 *SparseBitVector) {
 	}
 }
 
+// IntersectWith sets sbv to the intersection of itself and sbv2.
+func (sbv *SparseBitVector) IntersectWith(sbv2 *SparseBitVector) {
+	for e1, e2 := sbv.start, sbv2.start; e1 != nil; {
+		// remove sbv elements not in sbv2
+		for e1 != nil && (e2 == nil || e1.index < e2.index) {
+			sbv.delete(e1)
+			e1 = e1.next
+		}
+		// skip sbv2 elements not in sbv
+		for e2 != nil && e1 != nil && e2.index < e1.index {
+			e2 = e2.next
+		}
+		// same index
+		if e1 != nil && e2 != nil && e1.index == e2.index {
+			e1.IntersectWith(&e2.FiniteBitVector)
+			e1 = e1.next
+			e2 = e2.next
+		}
+	}
+}
+
+// IntersectWithComplement sets sbv to the intersection of itself and the inverse of sbv2.
+func (sbv *SparseBitVector) IntersectWithComplement(sbv2 *SparseBitVector) {
+	for e1, e2 := sbv.start, sbv2.start; e1 != nil; {
+		// skip sbv elements not in sbv2
+		for e1 != nil && (e2 == nil || e1.index < e2.index) {
+			e1 = e1.next
+		}
+		// skip sbv2 elements not in sbv
+		for e2 != nil && e1 != nil && e2.index < e1.index {
+			e2 = e2.next
+		}
+		// same index
+		if e1 != nil && e2 != nil && e1.index == e2.index {
+			e1.IntersectWithComplement(&e2.FiniteBitVector)
+			e1 = e1.next
+			e2 = e2.next
+		}
+	}
+}
+
 // Iterate returns a channel which publishes all true bits in ascending order.
 // The behaviour is undefined for bits modified while iterating.
 func (sbv *SparseBitVector) Iterate() <-chan KeyType {

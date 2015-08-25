@@ -5,6 +5,7 @@
 package sparsebitvector
 
 import "testing"
+
 import "reflect"
 
 func TestTrivialOperation(t *testing.T) {
@@ -234,6 +235,65 @@ func TestUnionWith(t *testing.T) {
 	}
 	if vec2.UnionWith(New()); vec2.Count() != 2 {
 		t.Error("incorrect union", vec2)
+	}
+}
+
+func TestIntersectWith(t *testing.T) {
+	vec := New()
+	if vec.IntersectWith(vec); vec.Count() != 0 {
+		t.Error("incorrect intersection", vec)
+	}
+
+	vec = New(3, 1000)
+	if vec.IntersectWith(vec); vec.String() != "[3 1000]" {
+		t.Error("incorrect intersection", vec)
+	}
+
+	vec = New(0, 63, 1000000)
+	if vec.IntersectWith(New(0, 127, 128, 1000000)); vec.String() != "[0 1000000]" {
+		t.Error("incorrect intersection", vec)
+	}
+
+	vec = New(0, 127, 128, 1000000)
+	if vec.IntersectWith(New(0, 63, 1000000)); vec.String() != "[0 1000000]" {
+		t.Error("incorrect intersection", vec)
+	}
+
+	vec = New()
+	if vec.IntersectWith(New(0, 1000000)); vec.Count() != 0 {
+		t.Error("incorrect intersection", vec)
+	}
+
+	vec = New(0, 1000000)
+	if vec.IntersectWith(New()); vec.Count() != 0 {
+		t.Error("incorrect intersection", vec)
+	}
+}
+
+func TestIntersectWithComplement(t *testing.T) {
+	vec1 := New()
+	vec2 := New()
+
+	if vec1.IntersectWithComplement(vec2); vec1.Count() != 0 {
+		t.Error("incorrect intersection", vec1, vec2)
+	}
+
+	vec1 = New(0, 63, 1000000)
+	vec2 = New(0, 127, 128, 1000000)
+	if vec1.IntersectWithComplement(vec2); vec1.String() != "[63]" {
+		t.Error("incorrect intersection", vec1, vec2)
+	}
+	if vec2.IntersectWithComplement(New(0, 63, 1000000)); vec2.String() != "[127 128]" {
+		t.Error("incorrect intersection", vec2)
+	}
+
+	vec1 = New()
+	vec2 = New(0, 1000000)
+	if vec1.IntersectWithComplement(vec2); vec1.Count() != 0 {
+		t.Error("incorrect intersection", vec1, vec2)
+	}
+	if vec2.IntersectWithComplement(New()); vec2.String() != "[0 1000000]" {
+		t.Error("incorrect intersection", vec2)
 	}
 }
 
