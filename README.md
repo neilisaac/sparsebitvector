@@ -2,9 +2,16 @@ sparsebitvector
 ===============
 
 [![TravisCI](https://travis-ci.org/neilisaac/sparsebitvector.svg)](https://travis-ci.org/neilisaac/sparsebitvector)
+[![GoDoc](https://img.shields.io/badge/godoc-documentation-blue.svg)](https://godoc.org/github.com/neilisaac/sparsebitvector)
 
 This library provides a SparseBitVector implementation in go based on
 the similarly named class provided by LLVM.
+
+See:
+
+ * Documentation on [GoDoc](https://godoc.org/github.com/neilisaac/sparsebitvector)
+ * LLVM's [SparseBitVector](https://github.com/llvm-mirror/llvm/blob/master/include/llvm/ADT/SparseBitVector.h)
+
 
 ### Usage
 
