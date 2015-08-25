@@ -34,7 +34,7 @@ func (sbv *SparseBitVector) delete(e *element) {
 		sbv.start = e.next
 	}
 	if sbv.current == e {
-		sbv.current = e.next
+		sbv.current = e.prev
 	}
 	if e.prev != nil {
 		e.prev.next = e.next
