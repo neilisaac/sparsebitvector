@@ -115,8 +115,10 @@ func (vec *FiniteBitVector) Count() (count int) {
 func (vec *FiniteBitVector) IntersectionSize(vec2 *FiniteBitVector) int {
 	intersection := 0
 	for w := 0; w < wordsperelement; w++ {
-		for word := vec[w] & vec2[w]; word != 0; word >>= 1 {
-			intersection += int(word & 1)
+		value := vec[w] & vec2[w]
+		for value != 0 {
+			value &= value - 1
+			intersection++
 		}
 	}
 	return intersection
