@@ -145,6 +145,17 @@ func (sbv *SparseBitVector) UnionAndIntersectionSize(sbv2 *SparseBitVector) (int
 	}
 	return sbv.count + sbv2.count - intersection, intersection
 }
+
+// UnionSize returns the number of true bits of the union with sbv2.
+func (sbv *SparseBitVector) UnionSize(sbv2 *SparseBitVector) int {
+	u, _ := sbv.UnionAndIntersectionSize(sbv2)
+	return u
+}
+
+// IntersectionSize returns the number of true bits of the intersection with sbv2.
+func (sbv *SparseBitVector) IntersectionSize(sbv2 *SparseBitVector) int {
+	_, i := sbv.UnionAndIntersectionSize(sbv2)
+	return i
 }
 
 // UnionWith returns the number of true bits of the union and intersection with sbv2.

@@ -43,6 +43,8 @@ for value := range vec.Iterate() {
  * `Equals` compare to another SparseBitVector
  * `Contains` returns true if another SparseBitVector's bits are all true
  * `UnionAndIntersectionSize` return the size of the union and intersection with another SparseBitVector
+ * `UnionSize`
+ * `IntersectionSize`
  * `UnionWith` union itself with another SparseBitVector
  * `IntersectWith` intersect itself with another SparseBitVector
  * `IntersectWithComplement` intersect itself with the bitwise inverse of another SparseBitVector
@@ -50,7 +52,5 @@ for value := range vec.Iterate() {
 ### TODO
 
  * `Union` returning a new bit vector
- * `UnionSize` redundant; use `UnionAndIntersectionSize`
  * `Intersection` returning a new bit vector
  * `Intersects` returning true if any bit is present in the intersection
- * `IntersectionSize` could be faster than `UnionAndIntersectionSize`
