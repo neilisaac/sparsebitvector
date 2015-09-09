@@ -14,6 +14,7 @@ type KeyType uint64
 type SparseBitVector struct {
 	start   *element
 	current *element
+	count   int
 }
 
 // New creates and instance of a SparseBitVector, optionally initialized by set.
@@ -33,9 +34,11 @@ func (sbv *SparseBitVector) Set(key KeyType) {
 	if nearest == nil {
 		e := sbv.create(index, nil, nil)
 		e.Set(uint(key % elementsize))
+		sbv.count++
 	} else if nearest.index < index {
 		e := sbv.create(index, nearest, nearest.next)
 		e.Set(uint(key % elementsize))
+		sbv.count++
 		nearest.next = e
 		if e.next != nil {
 			e.next.prev = e
@@ -43,8 +46,11 @@ func (sbv *SparseBitVector) Set(key KeyType) {
 	} else if nearest.index > index {
 		e := sbv.create(index, nearest.prev, nearest)
 		e.Set(uint(key % elementsize))
+		sbv.count++
 	} else {
-		nearest.Set(uint(key % elementsize))
+		if nearest.TestAndSet(uint(key % elementsize)) {
+			sbv.count++
+		}
 	}
 }
 
@@ -56,7 +62,9 @@ func (sbv *SparseBitVector) Unset(key KeyType) {
 		return
 	}
 
-	e.Unset(uint(key % elementsize))
+	if e.TestAndUnset(uint(key % elementsize)) {
+		sbv.count--
+	}
 	if e.Count() == 0 {
 		sbv.delete(e)
 	}
@@ -66,15 +74,12 @@ func (sbv *SparseBitVector) Unset(key KeyType) {
 func (sbv *SparseBitVector) Clear() {
 	sbv.start = nil
 	sbv.current = nil
+	sbv.count = 0
 }
 
 // Count returns the number of distinct bits that are true.
 func (sbv *SparseBitVector) Count() int {
-	total := 0
-	for element := sbv.start; element != nil; element = element.next {
-		total += element.Count()
-	}
-	return total
+	return sbv.count
 }
 
 // Test checks whether a particular bit is true.
@@ -121,29 +126,25 @@ func (sbv *SparseBitVector) Contains(sbv2 *SparseBitVector) bool {
 
 // UnionAndIntersectionSize returns the number of true bits of the union and intersection with sbv2.
 func (sbv *SparseBitVector) UnionAndIntersectionSize(sbv2 *SparseBitVector) (int, int) {
-	union := 0
 	intersection := 0
-	for e1, e2 := sbv.start, sbv2.start; e1 != nil || e2 != nil; {
+	for e1, e2 := sbv.start, sbv2.start; e1 != nil && e2 != nil; {
 		// sbv catch-up
 		for e1 != nil && (e2 == nil || e1.index < e2.index) {
-			union += e1.Count()
 			e1 = e1.next
 		}
 		// sbv2 catch-up
 		for e2 != nil && (e1 == nil || e2.index < e1.index) {
-			union += e2.Count()
 			e2 = e2.next
 		}
 		// same index
 		if e1 != nil && e2 != nil && e1.index == e2.index {
-			u, i := e1.UnionAndIntersectionSize(&e2.FiniteBitVector)
-			union += u
-			intersection += i
+			intersection += e1.IntersectionSize(&e2.FiniteBitVector)
 			e1 = e1.next
 			e2 = e2.next
 		}
 	}
-	return union, intersection
+	return sbv.count + sbv2.count - intersection, intersection
+}
 }
 
 // UnionWith returns the number of true bits of the union and intersection with sbv2.
@@ -159,12 +160,15 @@ func (sbv *SparseBitVector) UnionWith(sbv2 *SparseBitVector) {
 			sbv.Set(e2.index * elementsize)
 			e1 = sbv.search(e2.index)
 			e1.FiniteBitVector = e2.FiniteBitVector
+			sbv.count += e1.Count() - 1
 			e1 = e1.next
 			e2 = e2.next
 		}
 		// same index
 		if e1 != nil && e2 != nil && e1.index == e2.index {
+			before := e1.Count()
 			e1.UnionWith(&e2.FiniteBitVector)
+			sbv.count += e1.Count() - before
 			e1 = e1.next
 			e2 = e2.next
 		}
@@ -176,6 +180,7 @@ func (sbv *SparseBitVector) IntersectWith(sbv2 *SparseBitVector) {
 	for e1, e2 := sbv.start, sbv2.start; e1 != nil; {
 		// remove sbv elements not in sbv2
 		for e1 != nil && (e2 == nil || e1.index < e2.index) {
+			sbv.count -= e1.Count()
 			sbv.delete(e1)
 			e1 = e1.next
 		}
@@ -185,7 +190,9 @@ func (sbv *SparseBitVector) IntersectWith(sbv2 *SparseBitVector) {
 		}
 		// same index
 		if e1 != nil && e2 != nil && e1.index == e2.index {
+			before := e1.Count()
 			e1.IntersectWith(&e2.FiniteBitVector)
+			sbv.count += e1.Count() - before
 			e1 = e1.next
 			e2 = e2.next
 		}
@@ -205,7 +212,9 @@ func (sbv *SparseBitVector) IntersectWithComplement(sbv2 *SparseBitVector) {
 		}
 		// same index
 		if e1 != nil && e2 != nil && e1.index == e2.index {
+			before := e1.Count()
 			e1.IntersectWithComplement(&e2.FiniteBitVector)
+			sbv.count += e1.Count() - before
 			e1 = e1.next
 			e2 = e2.next
 		}
