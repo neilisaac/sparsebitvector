@@ -40,12 +40,22 @@ func (vec *FiniteBitVector) Set(key uint) {
 	vec[word] |= 1 << bit
 }
 
-// TestAndSet sets a bit to true and returns true iff it was previously true.
+// TestAndSet sets a bit to true and returns true iff it was changed.
 func (vec *FiniteBitVector) TestAndSet(key uint) bool {
 	if vec.Test(key) {
 		return false
 	}
 	vec.Set(key)
+	return true
+}
+
+// TestAndUnset sets a bit to false and returns true iff it was changed.
+func (vec *FiniteBitVector) TestAndUnset(key uint) bool {
+	word, bit := vec.getWordBit(key)
+	if vec[word]&(1<<bit) == 0 {
+		return false
+	}
+	vec[word] &^= 1 << bit
 	return true
 }
 

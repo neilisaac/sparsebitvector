@@ -74,6 +74,14 @@ func TestTrivialBitVectorOperation(t *testing.T) {
 		t.Error("incorrect count ", vec.Count(), vec)
 	}
 
+	vec.Set(18)
+	if !vec.TestAndUnset(18) {
+		t.Error("expected 18")
+	}
+	if vec.Test(18) {
+		t.Error("unexpected 18")
+	}
+
 	vec.Clear()
 	if vec.Test(17) {
 		t.Error("17 unexpected", vec)
