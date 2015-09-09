@@ -113,7 +113,7 @@ func TestEquals(t *testing.T) {
 	}
 
 	vec1 = New(0)
-	vec2 = New(elementsize)
+	vec2 = New(ElementSize)
 	if vec1.Equals(vec2) || vec2.Equals(vec1) {
 		t.Error("vec1 and vec2 should not be equal", vec1, vec2)
 	}
@@ -157,7 +157,7 @@ func TestContains(t *testing.T) {
 	}
 
 	vec1 = New(0)
-	vec2 = New(elementsize)
+	vec2 = New(ElementSize)
 	if vec1.Contains(vec2) || vec2.Contains(vec1) {
 		t.Error("vec1 and vec2 should not contain each other", vec1, vec2)
 	}

@@ -28,16 +28,16 @@ func New(set ...KeyType) *SparseBitVector {
 
 // Set sets a particular bit to true in a SparseBitVector.
 func (sbv *SparseBitVector) Set(key KeyType) {
-	index := key / elementsize
+	index := key / ElementSize
 	nearest := sbv.search(index)
 
 	if nearest == nil {
 		e := sbv.create(index, nil, nil)
-		e.Set(uint(key % elementsize))
+		e.Set(uint(key % ElementSize))
 		sbv.count++
 	} else if nearest.index < index {
 		e := sbv.create(index, nearest, nearest.next)
-		e.Set(uint(key % elementsize))
+		e.Set(uint(key % ElementSize))
 		sbv.count++
 		nearest.next = e
 		if e.next != nil {
@@ -45,10 +45,10 @@ func (sbv *SparseBitVector) Set(key KeyType) {
 		}
 	} else if nearest.index > index {
 		e := sbv.create(index, nearest.prev, nearest)
-		e.Set(uint(key % elementsize))
+		e.Set(uint(key % ElementSize))
 		sbv.count++
 	} else {
-		if nearest.TestAndSet(uint(key % elementsize)) {
+		if nearest.TestAndSet(uint(key % ElementSize)) {
 			sbv.count++
 		}
 	}
@@ -56,13 +56,13 @@ func (sbv *SparseBitVector) Set(key KeyType) {
 
 // Unset sets a particular bit to false.
 func (sbv *SparseBitVector) Unset(key KeyType) {
-	index := key / elementsize
+	index := key / ElementSize
 	e := sbv.search(index)
 	if e == nil || e.index != index {
 		return
 	}
 
-	if e.TestAndUnset(uint(key % elementsize)) {
+	if e.TestAndUnset(uint(key % ElementSize)) {
 		sbv.count--
 	}
 	if e.Count() == 0 {
@@ -84,12 +84,12 @@ func (sbv *SparseBitVector) Count() int {
 
 // Test checks whether a particular bit is true.
 func (sbv *SparseBitVector) Test(key KeyType) bool {
-	index := key / elementsize
+	index := key / ElementSize
 	element := sbv.search(index)
 	if element == nil || element.index != index {
 		return false
 	}
-	return element.Test(uint(key % elementsize))
+	return element.Test(uint(key % ElementSize))
 }
 
 // TestAndSet checks whether a bit was previously true before setting it to true.
@@ -168,7 +168,7 @@ func (sbv *SparseBitVector) UnionWith(sbv2 *SparseBitVector) {
 		// sbv2 catch-up
 		for e2 != nil && (e1 == nil || e2.index < e1.index) {
 			// insert element and copy data
-			sbv.Set(e2.index * elementsize)
+			sbv.Set(e2.index * ElementSize)
 			e1 = sbv.search(e2.index)
 			e1.FiniteBitVector = e2.FiniteBitVector
 			sbv.count += e1.Count() - 1
@@ -239,7 +239,7 @@ func (sbv *SparseBitVector) Iterate() <-chan KeyType {
 	go func(c chan<- KeyType) {
 		for e := sbv.start; e != nil; e = e.next {
 			for i := e.FindNext(0); i != -1; i = e.FindNext(i + 1) {
-				c <- e.index*elementsize + KeyType(i)
+				c <- e.index*ElementSize + KeyType(i)
 			}
 		}
 		close(c)

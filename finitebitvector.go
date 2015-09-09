@@ -10,7 +10,9 @@ type elementwordtype uint64
 
 const bitsperword = 64
 const wordsperelement = 2
-const elementsize = bitsperword * wordsperelement
+
+// ElementSize is the number of bits per FiniteBitVector
+const ElementSize = bitsperword * wordsperelement
 
 // FiniteBitVector provides a bit vector of length elementsize.
 type FiniteBitVector [wordsperelement]elementwordtype
@@ -25,7 +27,7 @@ func NewFiniteBitVector(set ...uint) *FiniteBitVector {
 }
 
 func (vec *FiniteBitVector) getWordBit(key uint) (uint, uint) {
-	if key < 0 || key >= elementsize {
+	if key < 0 || key >= ElementSize {
 		panic("key out of range for element")
 	}
 
@@ -82,7 +84,7 @@ func (vec *FiniteBitVector) Test(key uint) bool {
 // The initial call should pass index 0.
 // Successive calls should pass previous+1.
 func (vec *FiniteBitVector) FindNext(index int) int {
-	if index >= elementsize {
+	if index >= ElementSize {
 		return -1
 	}
 	word, bit := vec.getWordBit(uint(index))
